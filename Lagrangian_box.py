@@ -14,15 +14,16 @@ LogMinMassSat=10
 basePath="../output/"
 filename="fof_subhalo_tab_019.hdf5"
 filename_first="fof_subhalo_tab_001.hdf5"
-INIT_file="../IC-DM-L136-N512.hdf5"
+INIT_file="../IC-DM-L136-N256.hdf5"
 file_path=basePath+filename
 file_path_first=basePath+filename_first
 FOF=h5py.File(file_path, "r")
 FOF_first=h5py.File(file_path_first, "r")
-halos_list=[4, 8,33,34,74,69,65] 
 LogM200=np.log10(FOF["Group"]["Group_M_Crit200"][:]*1E10/HubbleParam)
 CIDS=np.logical_and(LogM200>LogMinMass, LogM200<LogMaxMass)
 print(f"We found {CIDS.sum()} halos with masses between {LogMinMass}, and {LogMaxMass}")
+#halos_list=[20,22,29,32,33,38,39,42,44,45]
+halos_list=np.where(CIDS)[0]
 ###Check that the second halo have at least the double of mass of any other satellite, and check the number of subhalos with masses 
 def check_sat_masses(FOF, CIDS, LogMinMassSat, HubbleParam):
     SubMasses=FOF["Subhalo"]["SubhaloMass"][:]*1E10/HubbleParam
@@ -95,32 +96,32 @@ def plot_halo(snap, HaloNum, HaloPos, plot_radius, HaloMass, SatNum, BCGvsSat, I
     #plt.text(360, 860,"200 Mpc" )
     cbar=fig.colorbar(mesh, pad=0.0, location="bottom")
     cbar.set_label(r"Projected Particle Mass ($M_{\odot}$)")
-    plt.text(30,900, f"LogM200={round(HaloMass, 2)}", fontsize=18)
-    plt.text(30,700, f"NSat={np.round(SatNum,2)}", fontsize=18)
-    plt.text(30,800, f"R200={np.round(R200,2)} kpc", fontsize=18)
+    plt.text(30,900, f"LogM200={HaloMass:.2f}", fontsize=18)
+    plt.text(30,800, f"NSat={np.round(SatNum,2)}", fontsize=18)
+    plt.text(30,850, f"R200={np.round(R200,2)} kpc", fontsize=18)
     plt.text(500,900, f"MBCG/MFirstSat={np.round(BCGvsSat,2)}", fontsize=18)
-    plt.text(500, 800, f"NP={IDS_PART.sum()}", fontsize=18)
-    plt.text(500, 700, f"HR Part={IDS_PART.sum()*8}", fontsize=18)
-    plt.text(500, 600, f"Tot. Part 1HR={round(512**3+(2**3-1)*IDS_PART.sum(),2)}", fontsize=18)
-    plt.text(500, 500, f"Tot. Part 2HR={round(512**3+(2**6-1)*IDS_PART.sum(),2)}", fontsize=18)
-    plt.text(500, 400, f"Tot. Part 3HR={round(512**3+(2**9-1)*IDS_PART.sum(),2)}", fontsize=18)
+    plt.text(500, 850, f"NP={IDS_PART.sum()}", fontsize=18)
+    plt.text(500, 800, f"HR Part={IDS_PART.sum()*8}", fontsize=18)
+    plt.text(500, 700, f"Tot. Part 1HR={round(512**3+(2**3-1)*IDS_PART.sum(),2)}", fontsize=18)
+    plt.text(500, 650, f"Tot. Part 2HR={round(512**3+(2**6-1)*IDS_PART.sum(),2)}", fontsize=18)
+    plt.text(500, 600, f"Tot. Part 3HR={round(512**3+(2**9-1)*IDS_PART.sum(),2)}", fontsize=18)
     plt.savefig("Figures/Halo_"+str(HaloNum)+".png", dpi=300)
     print("Plot saved")
     print("Start to find the particles in the initial conditions")
     #snap_name2="snapshot_011.hdf5"
     #INIT_file=basePath+snap_name2
     INIT=h5py.File(INIT_file, "r")
-    ind_INIT=npi.indices(INIT["PartType1"]["ParticleIDs"], IDS_sim)
-    print(f"We find {np.size(ind_INIT)} particles")
-    IDS_sorted=np.sort(ind_INIT)
-    print(f"Array sorted")
+    #ind_INIT=npi.indices(INIT["PartType1"]["ParticleIDs"], IDS_sim)
+    #print(f"We find {np.size(ind_INIT)} particles")
+    #IDS_sorted=np.sort(ind_INIT)
+    #print(f"Array sorted")
     IDS_in1d=np.in1d(INIT["PartType1"]["ParticleIDs"], IDS_sim)
     print("IDS found using in1d")
     COOR_INIT=INIT["PartType1"]["Coordinates"][:]
     #POS_INIT=INIT["PartType1"]["Coordinates"][np.in1d(INIT["PartType1"]["ParticleIDs"], IDS_sim), :]
     POS_INIT=COOR_INIT[IDS_in1d]
     PCOOR=pd.DataFrame(POS_INIT/snap["Header"].attrs["BoxSize"])
-    PCOOR.to_csv("POS_"+str(HaloNum)+"pandas1.txt", sep=' ', index=False, header=False)
+    PCOOR.to_csv("POSITIONS_LB/POS_"+str(HaloNum)+".txt", sep=' ', index=False, header=False)
     print("Initial positions loaded...")
     #HALO_POS_INIT, range_halo=compute_center(POS_INIT)
     HALO_POS_INIT=INIT["PartType1"]['Coordinates'][INIT["PartType1"]["ParticleIDs"][:]==IDMostBound].flatten()
@@ -141,7 +142,7 @@ def plot_halo(snap, HaloNum, HaloPos, plot_radius, HaloMass, SatNum, BCGvsSat, I
     plt.text(30, 800, f"The lowest right coordinates are: {(np.min(rel_pos_INIT)+HALO_POS_INIT)/BoxSize}", fontsize=18)
     #plt.text(30,700, f"NSat={SatNum}", fontsize=18)
     #plt.text(600,900, f"MBCG/MFirstSat={BCGvsSat}", fontsize=18)
-    plt.savefig("Figures/Halo_final_INIT"+str(HaloNum)+".png", dpi=300)
+    plt.savefig("Figures/Halo_INIT"+str(HaloNum)+".png", dpi=300)
     #print(f"The range is {range_halo} in units of kpc/h")
 
 for l in range(np.size(halos_list)):

@@ -26,9 +26,10 @@ def plot_halo(rel_pos, IDS_PART, params, snap_num, ax1, ax2):
 
 FOF_filename="../output/fof_subhalo_tab_019.hdf5"
 FOF=h5py.File(FOF_filename, "r")
-
+INIT_name="../IC-DM-L136-N256.hdf5"
 halos_number=[4,8,33,34,74,69,65]
-Nhalo=69
+Nhalo=0
+
 fsnap_name="../output/snapshot_019.hdf5"
 fsnap=h5py.File(fsnap_name, "r")
 params=fsnap["Header"].attrs
@@ -61,7 +62,6 @@ for i in snaps:
     plot_halo(snap["PartType1"]["Coordinates"][:], selected, params_s, i,0,2)
     plot_halo(snap["PartType1"]["Coordinates"][:], selected, params_s, i,1,2)
 
-INIT_name="../IC-DM-L136-N512.hdf5"
 INIT=h5py.File(INIT_name, "r")
 params_INIT=INIT["Header"].attrs
 selected=np.in1d(INIT["PartType1"]["ParticleIDs"][:], IDS_sim)
