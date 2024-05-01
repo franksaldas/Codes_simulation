@@ -10,7 +10,7 @@ import glob
 matplotlib.rcParams.update({'font.size': 18})
 
 h=0.6774
-filenames=sorted(glob.glob("/home/franklin/Documents/SIM_eb/gadget4/SIMULATIONS/DM-L136-N128-Halo0-level9/output/snapshot_*.hdf5"))
+filenames=sorted(glob.glob("/data01/faldas/DM-L136-N512-Halo59/output/snapshot_*.hdf5"))
 print(filenames)
 def plot_halo(snap,snap_num, ax1,ax2, params,  h, HaloPos, ranges=None, ax1_bins=800, ax2_bins=None):
     distances, rel_pos=FN.distances_from_center(snap['PartType1']['Coordinates'][:], HaloPos, params["BoxSize"])
@@ -31,7 +31,7 @@ def plot_halo(snap,snap_num, ax1,ax2, params,  h, HaloPos, ranges=None, ax1_bins
     fig, ax=plt.subplots(figsize=(10,12))
     plt.style.use('dark_background')
     #ax.set_facecolor("k")
-    mesh=plt.pcolormesh(statistic.T, norm=matplotlib.colors.LogNorm(vmin=1E8, vmax=1E13), cmap="magma")
+    mesh=plt.pcolormesh(statistic.T, norm=matplotlib.colors.LogNorm(vmin=1E8, vmax=3.1E11), cmap="magma")
     #xpos=800/(np.max(x_edge)-np.min(x_edge))*(MOST_MASSIVE[ax1]-np.min(x_edge))
     #ypos=800/(np.max(y_edge)-np.min(y_edge))*(MOST_MASSIVE[ax2]-np.min(y_edge))
     #plt.plot(xpos, ypos, "o:b", ms=10)
@@ -55,7 +55,7 @@ def plot_halo(snap,snap_num, ax1,ax2, params,  h, HaloPos, ranges=None, ax1_bins
     return [[ax1_min, ax1_max], [ax2_min, ax2_max]], ax1_bins,ax2_bins
 
 def plot_snaps(filenames):
-    FOF=h5py.File("/home/franklin/Documents/SIM_eb/gadget4/SIMULATIONS/DM-L136-N128-Halo0-level9/output/fof_subhalo_tab_266.hdf5", "r")
+    FOF=h5py.File("/data01/faldas/DM-L136-N512-Halo59/output/fof_subhalo_tab_267.hdf5", "r")
     BCGID=FOF['Group']['GroupFirstSub'][0]
     IDMostBound=FOF["Subhalo"]['SubhaloIDMostbound'][BCGID]
     for filename in filenames[:-1]:
